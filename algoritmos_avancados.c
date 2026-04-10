@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_QUADRO 10
+#define MAX_SUSPEITOS 3
+
+// ========== STRUCTS ==========
+
 // funcao criar de mapa, onde cada sala tem nome e ponteiros para salas adjacentes.
 typedef struct Sala {
     char nome[50];
@@ -17,11 +22,43 @@ typedef struct Pista {
     struct Pista* esquerda;
 } Pista;
 
+//funcao para criar quadro de pistas.
+typedef struct Quadro {
+    char descricao[50];
+    struct Quadro* proximo;
+} Quadro; 
 
+ // ========== SUSPEITOS E HASH ==========
+
+Quadro* quadroHash[MAX_QUADRO]; // tabela hash para associar pistas a suspeitos
+
+// suspeitos
+const char* suspeitos[] = {"Jardineiro", "Filho", "Mae"};
+
+// funcao para inicializar o quadro.
+void inicializarQuadro() {
+    for (int i = 0; i < MAX_QUADRO; i++) {
+        quadroHash[i] = NULL;
+    }
+}
+ 
+// funcao para iniciar a tabela hash, alocando memoria e definindo ponteiros como NULL.
+int funcaoHash(const char* chave) {
+    int soma = 0;
+    for(int i = 0; chave[i] != '\0'; i++) {
+        soma += chave[i] * (i + 1);
+    }
+    return soma % MAX_QUADRO;
+}
+
+// inserir pista no quadro hash.
+void inserirPista 
 // funcao para separacao visual entre etapas do jogo.
 void separador() {
     printf("\n\n========================================\n\n");
 }
+
+// ==========  FUNCOES DE MANIPULACAO DE MAPA. PISTA E QUADRO ==========
 
 // funcao para criar nova sala, alocando memoria e copiando nome.
 Sala* novaSala(char* nome) {
@@ -78,6 +115,8 @@ void criarPistas (Pista** raiz) {
     (*raiz)->esquerda->esquerda = novaPista("Bota suja de lama");
     (*raiz)->direita->direita = novaPista("Buraco recem cavado no jardim");
 }
+
+
 
 // funcao para associar pistas as salas, permitindo o jogador coletar automaticamente as pistas ao entrar nas salas.
 void associarPistas (Sala* sala, Pista* pista) {
